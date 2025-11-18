@@ -1,6 +1,6 @@
 import { connect } from '@/lib/client'
 import { Collection } from 'mongodb'
-import { User } from './user.schema'
+import { User } from '../models/user.model'
 
 let _users: Collection<User> | null = null
 

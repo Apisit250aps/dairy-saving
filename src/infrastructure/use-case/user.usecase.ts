@@ -1,6 +1,6 @@
 import { hashPassword } from '@/lib/encrypts'
-import { usersCollection } from './user.repository'
-import { BaseUser, BaseUserSchema, User, UserFormValues } from './user.schema'
+import { usersCollection } from '../repositories/user.repository'
+import { BaseUser, BaseUserSchema, User, UserFormValues } from '../models/user.model'
 import z from 'zod'
 
 export async function createUser(
