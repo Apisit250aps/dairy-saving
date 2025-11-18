@@ -2,7 +2,7 @@ import { User, UserFormSchema } from '@/infrastructure/models/user.model'
 import {
   createUser,
   getUserExists,
-} from '@/infrastructure/use-cases/user.usecase'
+} from '@/infrastructure/use-case/user.usecase'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function UserRegister(
@@ -23,7 +23,7 @@ export async function UserRegister(
     }
 
     const exists = await getUserExists({
-      filter: { $or: [{ id: parsed.data.id }, { name: parsed.data.name }] },
+      filter: { $or: [{ name: parsed.data.name }] },
     })
     if (exists) {
       return NextResponse.json(

@@ -3,7 +3,7 @@ import z from 'zod'
 export const BaseUserSchema = z.object({
   id: z.uuid(),
   email: z.email().nullable().default(null).optional(),
-  name: z.string().min(2).max(100).optional(),
+  name: z.string().min(2).max(100),
   password: z.string(),
   // Additional fields
   is_superuser: z.boolean().default(false),
@@ -14,6 +14,7 @@ export const BaseUserSchema = z.object({
 })
 
 export const UserFormSchema = BaseUserSchema.omit({
+  id: true,
   is_superuser: true,
   is_active: true,
   last_login: true,

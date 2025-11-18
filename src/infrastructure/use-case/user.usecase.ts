@@ -12,7 +12,6 @@ import z from 'zod'
 import { Filter } from 'mongodb'
 import { omit } from 'lodash'
 
-
 export async function createUser(
   data: BaseUser | UserFormValues
 ): Promise<User | null> {
@@ -46,6 +45,7 @@ export async function createUser(
     }
     return null
   } catch (error) {
+    console.error('Error creating user:', error)
     throw error
   }
 }
@@ -201,7 +201,7 @@ export async function userLogin(
       { $set: { last_login: new Date() } }
     )
 
-    return omit(user, ['password', '_id']) 
+    return omit(user, ['password', '_id'])
   } catch (error) {
     throw error
   }
