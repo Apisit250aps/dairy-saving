@@ -1,7 +1,17 @@
-import { hashPassword } from '@/lib/encrypts'
+import { hashPassword, verifyPassword } from '@/lib/encrypts'
 import { usersCollection } from '../repositories/user.repository'
-import { BaseUser, BaseUserSchema, User, UserFormValues } from '../models/user.model'
+import {
+  BaseUser,
+  BaseUserSchema,
+  User,
+  UserFormValues,
+  UserLoginSchema,
+  UserLoginValues,
+} from '../models/user.model'
 import z from 'zod'
+import { Filter } from 'mongodb'
+import { omit } from 'lodash'
+
 
 export async function createUser(
   data: BaseUser | UserFormValues
@@ -141,6 +151,57 @@ export async function getAllUsers(): Promise<User[]> {
       .find({}, { projection: { password: 0, _id: 0 } })
       .toArray()
     return allUsers
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getUserExists({
+  filter,
+}: Filter<BaseUser>): Promise<boolean> {
+  try {
+    const users = await usersCollection()
+    const exists = await users.findOne<BaseUser>(filter)
+    return exists !== null
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function userLogin(
+  credentials: UserLoginValues
+): Promise<User | null> {
+  try {
+    const parsed = await UserLoginSchema.safeParseAsync(credentials)
+    if (!parsed.success) {
+      throw new Error('Invalid login credentials')
+    }
+
+    const users = await usersCollection()
+    const user = await users.findOne({
+      $and: [{ name: parsed.data.name }, { is_active: true }],
+      projection: { _id: 0 },
+    })
+
+    if (!user) {
+      throw new Error('User not found or inactive')
+    }
+
+    const isPasswordValid = await verifyPassword(
+      user.password,
+      parsed.data.password
+    )
+
+    if (!isPasswordValid) {
+      throw new Error('Invalid password')
+    }
+
+    await users.findOneAndUpdate(
+      { id: user.id },
+      { $set: { last_login: new Date() } }
+    )
+
+    return omit(user, ['password', '_id']) 
   } catch (error) {
     throw error
   }

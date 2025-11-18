@@ -34,6 +34,12 @@ export const UserSchema = BaseUserSchema.omit({
   password: true,
 })
 
+export const UserLoginSchema = z.object({
+  name: z.string().min(2).max(100),
+  password: z.string().min(6).max(100),
+})
+
 export type User = z.infer<typeof UserSchema>
 export type BaseUser = z.infer<typeof BaseUserSchema>
 export type UserFormValues = z.infer<typeof UserFormSchema>
+export type UserLoginValues = z.infer<typeof UserLoginSchema>
