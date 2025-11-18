@@ -11,8 +11,6 @@ export async function createUser(
     //
     const parsed = await BaseUserSchema.transform(async (data) => ({
       ...data,
-      is_active: true,
-      is_superuser: false,
       password: await hashPassword(data.password),
     })).safeParseAsync(data)
     // Validate parsed data
